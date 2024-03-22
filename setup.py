@@ -37,6 +37,8 @@ setup(
         "jupyter",
         "networkx",
         "ipykernel",
-        "easydict"
+        "easydict",
+        "streamlit",
+        "PIL"
     ],
 )
