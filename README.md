@@ -1,4 +1,4 @@
-<img src="./assets/GraPharm-icon.png" alt="drawing" width="50"/> <b><font size=50 color="#012B39">Gra</font><font size=50 color="#6EBE66">Pharm</font><b>
+<img src="./assets/Logo_hori@33.33x.png" alt="GraPharm"/>
 
 
 
