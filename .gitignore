@@ -1,7 +1,6 @@
 **/.DS_Store
 .vscode
 build
-**/data
 *.egg-info
 **/__pycache__
 **/lib
