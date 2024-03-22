@@ -1,0 +1,10 @@
+**/.DS_Store
+.vscode
+data
+build
+**/data
+*.egg-info
+**/__pycache__
+**/lib
+**/.ipynb_checkpoints
+outputs

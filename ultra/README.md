@@ -1,0 +1,1 @@
+This folder is adapted from [ULTRA](https://github.com/DeepGraphLearning/ULTRA) with some modifications to save node and edge dictionary in the dataset.
