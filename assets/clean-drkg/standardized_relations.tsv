@@ -1,0 +1,108 @@
+Relation-name	Data-source	Connected entity-types	Interaction-type	Standardized-type	Description	Reference for the description
+DGIDB::ACTIVATOR::Gene:Compound	DGIDB	Compound:Gene	activation	upregulates	An activator interaction is when a drug activates a biological response from a target, although the mechanism by which it does so may not be understood.	http://www.dgidb.org/getting_started
+DGIDB::AGONIST::Gene:Compound	DGIDB	Compound:Gene	agonism	upregulates	An agonist interaction occurs when a drug binds to a target receptor and activates the receptor to produce a biological response.	http://www.dgidb.org/getting_started
+DGIDB::ALLOSTERIC MODULATOR::Gene:Compound	DGIDB	Compound:Gene	allosteric modulation	modulates	An allosteric modulator interaction occurs when drugs exert their effects on their protein targets via a different binding site than the natural (orthosteric) ligand site.	http://www.dgidb.org/getting_started
+DGIDB::ANTAGONIST::Gene:Compound	DGIDB	Compound:Gene	antagonism	blocks	An antagonist interaction occurs when a drug blocks or dampens agonist-mediated responses rather than provoking a biological response itself upon binding to a target receptor.	http://www.dgidb.org/getting_started
+DGIDB::ANTIBODY::Gene:Compound	DGIDB	Compound:Gene	antibody	binds	An antibody interaction occurs when an antibody drug specifically binds the target molecule.	http://www.dgidb.org/getting_started
+DGIDB::BINDER::Gene:Compound	DGIDB	Compound:Gene	binding	binds	A binder interaction has drugs physically binding to their target.	http://www.dgidb.org/getting_started
+DGIDB::BLOCKER::Gene:Compound	DGIDB	Compound:Gene	blocking	blocks	Antagonist interactions are sometimes referred to as blocker interactions; examples include alpha blockers, beta blockers, and calcium channel blockers.	http://www.dgidb.org/getting_started
+DGIDB::CHANNEL BLOCKER::Gene:Compound	DGIDB	Compound:Gene	channel blocking	blocks		http://www.dgidb.org/getting_started
+DGIDB::INHIBITOR::Gene:Compound	DGIDB	Compound:Gene	inhibition	downregulates	In inhibitor interactions, the drug binds to a target and decreases its expression or activity. Most interactions of this class are enzyme inhibitors, which bind an enzyme to reduce enzyme activity.	http://www.dgidb.org/getting_started
+DGIDB::MODULATOR::Gene:Compound	DGIDB	Compound:Gene	modulation	modulates	In modulator interactions, the drug regulates or changes the activity of its target. In contrast to allosteric modulators, this interaction type may not involve any direct binding to the target.	http://www.dgidb.org/getting_started
+DGIDB::OTHER::Gene:Compound	DGIDB	Compound:Gene	other	interacts	This is a label given by the reporting source to an interaction that doesn't belong to other interaction types, as defined by the reporting source.	http://www.dgidb.org/getting_started
+DGIDB::PARTIAL AGONIST::Gene:Compound	DGIDB	Compound:Gene	partial agonism	upregulates	In a partial antagonist interaction, a drug will only partially reduce the amplitude of a functional response at its target receptor, as compared to the reduction of response by a full antagonist.	http://www.dgidb.org/getting_started
+DGIDB::POSITIVE ALLOSTERIC MODULATOR::Gene:Compound	DGIDB	Compound:Gene	positive allosteric modulation	upregulates	In a positive allosteric modulator interaction, the drug increases activity of the target enzyme.	http://www.dgidb.org/getting_started
+DRUGBANK::carrier::Compound:Gene	DRUGBANK	Compound:Gene	carrier	affected by	Gene acts as a carrier which binds to a drug and modifies its pharmacokinetics.	https://dev.drugbankplus.com/guides/terms/carrier
+DRUGBANK::ddi-interactor-in::Compound:Compound	DRUGBANK	Compound:Compound	drug-drug interaction	interacts	In DrugBank, this relation refers to a change in a drug's effect on the body when the drug is taken with other drugs.	https://dev.drugbankplus.com/guides/terms/drug-interaction
+DRUGBANK::enzyme::Compound:Gene	DRUGBANK	Compound:Gene	enzyme	catalyzes	Gene acts as an enzyme that facilitates the occurrence of a metabolic reaction by interacting with and transforming a drug or chemical to one or more specific metabolites.	https://dev.drugbankplus.com/guides/terms/enzyme
+DRUGBANK::target::Compound:Gene	DRUGBANK	Compound:Gene	target	interacts	The drug binds or otherwise interacts with the gene, resulting in an alteration of the normal function of the bound molecule and desirable therapeutic effects or unwanted adverse effects.	https://dev.drugbankplus.com/guides/terms/target
+DRUGBANK::x-atc::Compound:Atc	DRUGBANK	ATC:Compound	Compound belongs to Anatomical Therapeutic Chemical (ATC) code.	belongs	We extend the hierarchical ATC classification information of drugs from their corresponding ATC codes and connect entities representing each level of ATC into certain drugs.	
+DRUGBANK::treats::Compound:Disease	DRUGBANK	Compound:Disease	Compound treats the disease	treats	We extract  the  associated  conditions  related  to  compound entities in the drugbank.	
+GNBR::A+::Compound:Gene	GNBR	Compound:Gene	agonism, activation	upregulates		
+GNBR::A-::Compound:Gene	GNBR	Compound:Gene	antagonism, blocking	blocks		
+GNBR::B::Compound:Gene	GNBR	Compound:Gene	binding, ligand (esp. receptors)	binds		
+GNBR::B::Gene:Gene	GNBR	Gene:Gene	binding, ligand (esp. receptors)	binds		
+GNBR::C::Compound:Disease	GNBR	Compound:Disease	inhibits cell growth (esp. cancers)	treats		
+GNBR::D::Gene:Disease	GNBR	Disease:Gene	drug targets	drug target		
+GNBR::E+::Compound:Gene	GNBR	Compound:Gene	increases expression/production	upregulates		
+GNBR::E+::Gene:Gene	GNBR	Gene:Gene	increases expression/production	upregulates		
+GNBR::E-::Compound:Gene	GNBR	Compound:Gene	decreases expression/production	downregulates		
+GNBR::E::Compound:Gene	GNBR	Compound:Gene	affects expression/production (neutral)	interacts		
+GNBR::E::Gene:Gene	GNBR	Gene:Gene	affects expression/production (neutral)	regulates		
+GNBR::G::Gene:Disease	GNBR	Disease:Gene	promotes progression	associates		
+GNBR::H::Gene:Gene	GNBR	Gene:Gene	same protein or complex	same protein or complex		
+GNBR::I::Gene:Gene	GNBR	Gene:Gene	signaling pathway	interacts		
+GNBR::J::Compound:Disease	GNBR	Compound:Disease	role in disease pathogenesis	causes		
+GNBR::J::Gene:Disease	GNBR	Disease:Gene	role in pathogenesis	associates		
+GNBR::K::Compound:Gene	GNBR	Compound:Gene	metabolism, pharmacokinetics	affected by		
+GNBR::L::Gene:Disease	GNBR	Disease:Gene	improper regulation linked to disease	associates		
+GNBR::Md::Gene:Disease	GNBR	Disease:Gene	biomarkers (diagnostic)	associates		
+GNBR::Mp::Compound:Disease	GNBR	Compound:Disease	biomarkers (of disease progression)	causes		
+GNBR::N::Compound:Gene	GNBR	Compound:Gene	inhibits	downregulates		
+GNBR::O::Compound:Gene	GNBR	Compound:Gene	transport, channels	interacts		
+GNBR::Pa::Compound:Disease	GNBR	Compound:Disease	alleviates, reduces	palliates		
+GNBR::Pr::Compound:Disease	GNBR	Compound:Disease	prevents, suppresses	reduces risk of		
+GNBR::Q::Gene:Gene	GNBR	Gene:Gene	production by cell population	produced by cell population		
+GNBR::Rg::Gene:Gene	GNBR	Gene:Gene	regulation	regulates		
+GNBR::Sa::Compound:Disease	GNBR	Compound:Disease	side effect/adverse event	causes		
+GNBR::T::Compound:Disease	GNBR	Compound:Disease	treatment/therapy (including investigatory)	treats		
+GNBR::Te::Gene:Disease	GNBR	Disease:Gene	possible therapeutic effect	drug target		
+GNBR::U::Gene:Disease	GNBR	Disease:Gene	causal mutations	associates		
+GNBR::Ud::Gene:Disease	GNBR	Disease:Gene	mutations affecting disease course	associates		
+GNBR::V+::Gene:Gene	GNBR	Gene:Gene	activates, stimulates	upregulates		
+GNBR::W::Gene:Gene	GNBR	Gene:Gene	enhances response	upregulates		
+GNBR::X::Gene:Disease	GNBR	Disease:Gene	overexpression in disease	associates		
+GNBR::Y::Gene:Disease	GNBR	Disease:Gene	polymorphisms alter risk	associates		
+GNBR::Z::Compound:Gene	GNBR	Compound:Gene	enzyme activity	catalyzes		
+GNBR::in_tax::Gene:Tax	GNBR	Gene:Tax	gene belongs to taxonomy	belongs		
+Hetionet::AdG::Anatomy:Gene	HETIONET	Anatomy:Gene	downregulatation	downregulates		
+Hetionet::AeG::Anatomy:Gene	HETIONET	Anatomy:Gene	expression	expresses		
+Hetionet::AuG::Anatomy:Gene	HETIONET	Anatomy:Gene	upregulation	upregulates		
+Hetionet::CbG::Compound:Gene	HETIONET	Compound:Gene	binding	binds		
+Hetionet::CcSE::Compound:Side Effect	HETIONET	Compound:Side Effect	causes	causes		
+Hetionet::CdG::Compound:Gene	HETIONET	Compound:Gene	downregulation	downregulates		
+Hetionet::CpD::Compound:Disease	HETIONET	Compound:Disease	palliation	palliates		
+Hetionet::CrC::Compound:Compound	HETIONET	Compound:Compound	resemblence	resembles		
+Hetionet::CtD::Compound:Disease	HETIONET	Compound:Disease	treatment	treats		
+Hetionet::CuG::Compound:Gene	HETIONET	Compound:Gene	upregulation	upregulates		
+Hetionet::DaG::Disease:Gene	HETIONET	Disease:Gene	association	associates		
+Hetionet::DdG::Disease:Gene	HETIONET	Disease:Gene	downregulation	downregulates		
+Hetionet::DlA::Disease:Anatomy	HETIONET	Anatomy:Disease	localization	localization		
+Hetionet::DpS::Disease:Symptom	HETIONET	Disease:Symptom	presents	presents		
+Hetionet::DrD::Disease:Disease	HETIONET	Diisease:Disease	resemblence	resembles		
+Hetionet::DuG::Disease:Gene	HETIONET	Disease:Gene	upregulation	upregulates		
+Hetionet::GcG::Gene:Gene	HETIONET	Gene:Gene	covariation	covaries		
+Hetionet::GiG::Gene:Gene	HETIONET	Gene:Gene	interaction	interacts		
+Hetionet::GpBP::Gene:Biological Process	HETIONET	Biological Process:Gene	participation	participates		
+Hetionet::GpCC::Gene:Cellular Component	HETIONET	Cellular Component:Gene	participation	participates		
+Hetionet::GpMF::Gene:Molecular Function	HETIONET	Gene:Molecular Function	participation	participates		
+Hetionet::GpPW::Gene:Pathway	HETIONET	Gene:Pathway	participation	participates		
+Hetionet::Gr>G::Gene:Gene	HETIONET	Gene:Gene	regulation	regulates		
+Hetionet::PCiC::Pharmacologic Class:Compound	HETIONET	Compound:Pharmacologic Class	inclusion	includes		
+INTACT::ADP RIBOSYLATION REACTION::Gene:Gene	IntAct	Gene:Gene	ADP ribosylation reaction	reacts	Involves the addition of one or more ADP-ribose moieties to proteins.	https://www.ebi.ac.uk/ols/ontologies/mi/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FMI_0557
+INTACT::ASSOCIATION::Compound:Gene	IntAct	Compound:Gene	association	interacts	Interaction between molecules that may participate in formation of one, but possibly more, physical complexes.	https://www.ebi.ac.uk/ols/ontologies/mi/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FMI_0914
+INTACT::ASSOCIATION::Gene:Gene	IntAct	Gene:Gene	association	interacts	Interaction between molecules that may participate in formation of one, but possibly more, physical complexes.	https://www.ebi.ac.uk/ols/ontologies/mi/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FMI_0914
+INTACT::CLEAVAGE REACTION::Gene:Gene	IntAct	Gene:Gene	cleavage reaction	reacts	Covalent bond breakage in a molecule leading to the formation of smaller molecules.	https://www.ebi.ac.uk/ols/ontologies/mi/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FMI_0194
+INTACT::COLOCALIZATION::Gene:Gene	IntAct	Gene:Gene	colocalization	colocalizes	Coincident occurrence of molecules in a given subcellular fraction observed with a low resolution methodology from which a physical interaction among those molecules cannot be inferred.	https://www.ebi.ac.uk/ols/ontologies/mi/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FMI_0403
+INTACT::DEPHOSPHORYLATION REACTION::Gene:Gene	IntAct	Gene:Gene	dephosphorylation reaction	reacts	Phosphoresidues are cleaved and return D,C,H,S,T,Y or R residues.	https://www.ebi.ac.uk/ols/ontologies/mi/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FMI_0203
+INTACT::DIRECT INTERACTION::Compound:Gene	IntAct	Compound:Gene	direct interation	interacts	Interaction between molecules that are in direct contact with each other.	https://www.ebi.ac.uk/ols/ontologies/mi/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FMI_0407
+INTACT::DIRECT INTERACTION::Gene:Gene	IntAct	Gene:Gene	direct interation	interacts	Interaction between molecules that are in direct contact with each other.	https://www.ebi.ac.uk/ols/ontologies/mi/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FMI_0407
+INTACT::PHOSPHORYLATION REACTION::Gene:Gene	IntAct	Gene:Gene	phosphorylation reaction	reacts	Reversible reaction that can affect D,C,H,S,T,Y,R residues.	https://www.ebi.ac.uk/ols/ontologies/mi/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FMI_0217
+INTACT::PHYSICAL ASSOCIATION::Compound:Gene	IntAct	Compound:Gene	physical association	interacts	Interaction between molecules within the same physical complex.	https://www.ebi.ac.uk/ols/ontologies/mi/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FMI_0915
+INTACT::PHYSICAL ASSOCIATION::Gene:Gene	IntAct	Gene:Gene	physical association	interacts	Interaction between molecules within the same physical complex.	https://www.ebi.ac.uk/ols/ontologies/mi/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FMI_0915
+INTACT::PROTEIN CLEAVAGE::Gene:Gene	IntAct	Gene:Gene	protein cleavage	reacts	Covalent modification of a polypeptide occuring during its maturation or its proteolytic degradation.	https://www.ebi.ac.uk/ols/ontologies/mi/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FMI_0570
+INTACT::UBIQUITINATION REACTION::Gene:Gene	IntAct	Gene:Gene	ubiquitination reaction	reacts	Reversible reaction that create a covalent bond between a C-terminus G of ubiquitin and a K residue of the target.	https://www.ebi.ac.uk/ols/ontologies/mi/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FMI_0220
+STRING::ACTIVATION::Gene:Gene	STRING	Gene:Gene	activation	upregulates		
+STRING::BINDING::Gene:Gene	STRING	Gene:Gene	binding	binds		
+STRING::CATALYSIS::Gene:Gene	STRING	Gene:Gene	catalysis	catalyzes		
+STRING::EXPRESSION::Gene:Gene	STRING	Gene:Gene	expression	expresses		
+STRING::INHIBITION::Gene:Gene	STRING	Gene:Gene	inhibition	downregulates		
+STRING::OTHER::Gene:Gene	STRING	Gene:Gene	other	interacts	interaction that doesn't belong to other interaction types.	
+STRING::PTMOD::Gene:Gene	STRING	Gene:Gene	post-translational modification	catalyzes	Post-translational modification (PTM) refers to the covalent and generally enzymatic modification of proteins following protein biosynthesis.	https://en.wikipedia.org/wiki/Post-translational_modification
+STRING::REACTION::Gene:Gene	STRING	Gene:Gene	reaction	interacts		
+bioarx::Coronavirus_ass_host_gene::Disease:Gene	BIBLIOGRAPHY	Disease:Gene	interaction	associates	Interactions between the 6 Covid-19 related  diseases namely IBV, HCoV-229E, HCoV-NL63, SARS, MERS and MHV, and 117 host proteins.	
+bioarx::Covid2_acc_host_gene::Disease:Gene	BIBLIOGRAPHY	Disease:Gene	interaction	associates	Interactions between 27 viral  proteins,  and 332 physically associated human genes.	
+bioarx::DrugHumGen:Compound:Gene	BIBLIOGRAPHY	Compound:Gene	interaction	interacts		
+bioarx::DrugVirGen:Compound:Gene	BIBLIOGRAPHY	Compound:Gene	interaction	interacts		
+bioarx::HumGenHumGen:Gene:Gene	BIBLIOGRAPHY	Gene:Gene	interaction	interacts	Protein-protein interaction	
+bioarx::VirGenHumGen:Gene:Gene	BIBLIOGRAPHY	Gene:Gene	interaction	interacts	Protein-protein interaction	
