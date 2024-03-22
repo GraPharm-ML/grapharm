@@ -4,7 +4,6 @@ from PIL import Image
 import networkx as nx
 import os
 import streamlit.components.v1 as components
-datadir = "../data"
 # Create a placeholder
 placeholder = st.empty()
 # Write to the placeholder
@@ -13,10 +12,10 @@ placeholder.write("Loading data...")
 
 @st.cache_data
 def import_data():
-    drkg = pd.read_csv(f"{datadir}/drkg.tsv", sep="\t", header=None, names=["h", "r", "t"])
-    re_gloss = pd.read_csv(f"{datadir}/relation_glossary.tsv", sep="\t")
-    entities = pd.read_csv(f"{datadir}/embed/entities.tsv", sep="\t", header=None, names=["entity_name", "entity_id"])
-    elations = pd.read_csv(f"{datadir}/embed/relations.tsv", sep="\t", header=None, names=["relation_name", "relation_id"])
+    drkg = pd.read_csv("data/drkg.tsv", sep="\t", header=None, names=["h", "r", "t"])
+    re_gloss = pd.read_csv("data/relation_glossary.tsv", sep="\t")
+    entities = pd.read_csv("data/embed/entities.tsv", sep="\t", header=None, names=["entity_name", "entity_id"])
+    elations = pd.read_csv("data/embed/relations.tsv", sep="\t", header=None, names=["relation_name", "relation_id"])
     return drkg, re_gloss, entities, elations
 drkg, re_gloss, entities, elations = import_data()
 # Clear the placeholder

@@ -39,6 +39,5 @@ setup(
         "ipykernel",
         "easydict",
         "streamlit",
-        "PIL"
     ],
 )
