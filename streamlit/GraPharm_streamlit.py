@@ -46,10 +46,10 @@ edge_colors = {
 
 #@st.cache_data
 def import_data():
-    datadir = "../../data"
-    node_df = pd.read_csv(f"{datadir}/hetionet-v1.0-nodes.tsv", sep="\t")
-    edge_type_df = pd.read_csv(f"{datadir}/metaedges.tsv", sep="\t")
-    edge_df = pd.read_csv(f"{datadir}/hetionet-v1.0-edges.sif", sep="\t")
+    datadir = ""
+    node_df = pd.read_csv(f"{datadir}hetionet-v1.0-nodes.tsv", sep="\t")
+    edge_type_df = pd.read_csv(f"{datadir}metaedges.tsv", sep="\t")
+    edge_df = pd.read_csv(f"{datadir}hetionet-v1.0-edges.sif", sep="\t")
     return node_df, edge_type_df, edge_df
 node_df, edge_type_df, edge_df = import_data()
 # Clear the placeholder
