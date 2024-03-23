@@ -44,12 +44,12 @@ edge_colors = {
     "includes": "#4D5656"
 }
 
-#@st.cache_data
+@st.cache_data
 def import_data():
-    datadir = ""
-    node_df = pd.read_csv(f"{datadir}hetionet-v1.0-nodes.tsv", sep="\t")
-    edge_type_df = pd.read_csv(f"{datadir}metaedges.tsv", sep="\t")
-    edge_df = pd.read_csv(f"{datadir}hetionet-v1.0-edges.sif", sep="\t")
+    url = "https://raw.githubusercontent.com/grapharm-ml/grapharm/master/master/data/"  # Replace with the base URL of your raw files on GitHub
+    node_df = pd.read_csv(f"{url}hetionet-v1.0-nodes.tsv", sep="\t")
+    edge_type_df = pd.read_csv(f"{url}metaedges.tsv", sep="\t")
+    edge_df = pd.read_csv(f"{url}hetionet-v1.0-edges.sif", sep="\t")
     return node_df, edge_type_df, edge_df
 node_df, edge_type_df, edge_df = import_data()
 # Clear the placeholder
