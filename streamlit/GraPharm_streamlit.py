@@ -247,7 +247,11 @@ if num_nodes > 500:
     st.write('Number of nodes in the filtered subgraph:', len(filtered_nodes))
     if len(filtered_nodes) > 500:
         st.write('The filtered subgraph is still too large to visualize. Only showing 100 nodes. ')
-        selected_nodes = random.sample(filtered_nodes, 100)
+        
+        start = random.randint(0, len(filtered_nodes) - 100)
+        end = start + 99
+        selected_nodes = filtered_nodes[start:end]
+        
         filtered_graph = subgraph_network.subgraph(selected_nodes)
     
         graph = networkx2pyvis(filtered_graph)
