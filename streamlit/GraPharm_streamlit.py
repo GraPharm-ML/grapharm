@@ -6,6 +6,7 @@ import os
 import streamlit.components.v1 as components
 import requests
 from io import BytesIO
+import random
 print(os.getcwd())
 # Create a placeholder
 placeholder = st.empty()
@@ -76,13 +77,15 @@ def extract_entities_name(entities):
 entities_names = extract_entities_name(node_df)
 
 
-# Implement multiselect dropdown menu for option selection (returns a list)
-url = 'https://raw.githubusercontent.com/GraPharm-ML/grapharm/7a8ead6010320b94b53bf9b654ad354bf5500b1e/assets/Logo_hori%4033.33x.png'
-response = requests.get(url)
-image = Image.open(BytesIO(response.content))
-st.image(image, use_column_width=True)
-st.title("A Graph-based Platform to Uncover Novel Pharmacological Links")
+@st.cache_data
+def logo():
+    url = 'https://raw.githubusercontent.com/GraPharm-ML/grapharm/7a8ead6010320b94b53bf9b654ad354bf5500b1e/assets/Logo_hori%4033.33x.png'
+    response = requests.get(url)
+    image = Image.open(BytesIO(response.content))
+    st.image(image, use_column_width=True)
+    st.title("A Graph-based Platform to Uncover Novel Pharmacological Links")
 
+logo()
 
 st.sidebar.markdown("## Node Types")
 for node_type, color in node_colors.items():
@@ -141,20 +144,21 @@ def select_entities_for_display(network,edge_df,node_df,selected_entities):
     entity_graph = network.subgraph(nodes)
     return entity_graph
 # Check if 'selected_entities' is already in the session state
-if 'selected_entities' not in st.session_state or st.session_state.selected_entities == []:
-    with st.form(key='entities_selection'):
-        # Use the value from the session state in the multiselect widget
-        st.session_state.selected_entities = st.multiselect('Select entity/entities to visualize', entities_names)
+
+#initiate the session state
+with st.form(key='entities_selection'):
+# Use the value from the session state in the multiselect widget
+    if 'selected_entities' not in st.session_state or st.session_state.selected_entities == []:
+        st.session_state.   selected_entities = st.multiselect('Select entity/entities to visualize', entities_names)
         submit_button_1 = st.form_submit_button(label='Submit')
         if not submit_button_1:
             st.write('Please select entities to visualize')
             st.stop()
-elif st.button('Choose entities again'):
-    with st.form(key='entities_selection'):
-        # Use the value from the session state in the multiselect widget
+    submit_button_2 = st.form_submit_button(label='Reselect entities')      
+    if submit_button_2:
         st.session_state.selected_entities = st.multiselect('Select entity/entities to visualize', entities_names)
-        submit_button_2 = st.form_submit_button(label='Submit')
-        if not submit_button_2:
+        submit_button_3 = st.form_submit_button(label='Submit') 
+        if not submit_button_3:
             st.write('Please select entities to visualize')
             st.stop()
 selected_entities = st.session_state.selected_entities
@@ -170,7 +174,7 @@ def networkx2pyvis(_networkx_graph):
     # Create a new Pyvis network
     pyvis_graph = Network(notebook=True, 
                             bgcolor="white",
-                            select_menu=True,
+                            select_menu=False,
                             filter_menu=True,
                             neighborhood_highlight=True,
                             cdn_resources='remote')
@@ -189,7 +193,7 @@ def networkx2pyvis(_networkx_graph):
 if num_nodes <= 500:
 
 
-    st.header("Choose the edge types to filter out the node of interest.")
+    st.header("Choose the edge labels or node labels to filter out more the graph of interest.")
 
 
     graph = networkx2pyvis(subgraph_network)
@@ -241,18 +245,36 @@ if num_nodes > 500:
     # Get the nodes of the filtered graph
     filtered_nodes = list(filtered_graph.nodes)
     st.write('Number of nodes in the filtered subgraph:', len(filtered_nodes))
-    filtered_graph = subgraph_network.subgraph(filtered_nodes)
+    if len(filtered_nodes) > 500:
+        st.write('The filtered subgraph is still too large to visualize. Only showing 100 nodes. ')
+        selected_nodes = random.sample(filtered_nodes, 100)
+        filtered_graph = subgraph_network.subgraph(selected_nodes)
+    
+        graph = networkx2pyvis(filtered_graph)
+
+        # Generate the HTML file
+        graph.show("sub_graph.html")
+
+        # Read the HTML file
+        with open("sub_graph.html", "r") as f:
+            graph_html = f.read()
+        col1,col2 = st.columns(2)
+        with col1:
+            # Display the Pyvis network in Streamlit
+            components.html(graph_html, height=1000, width=700,scrolling=True)
+    else:
+        filtered_graph = subgraph_network.subgraph(filtered_nodes)
     
 
-    graph = networkx2pyvis(filtered_graph)
+        graph = networkx2pyvis(filtered_graph)
 
-    # Generate the HTML file
-    graph.show("sub_graph.html")
+        # Generate the HTML file
+        graph.show("sub_graph.html")
 
-    # Read the HTML file
-    with open("sub_graph.html", "r") as f:
-        graph_html = f.read()
-    col1,col2 = st.columns(2)
-    with col1:
-        # Display the Pyvis network in Streamlit
-        components.html(graph_html, height=1000, width=700,scrolling=True)
+        # Read the HTML file
+        with open("sub_graph.html", "r") as f:
+            graph_html = f.read()
+        col1,col2 = st.columns(2)
+        with col1:
+            # Display the Pyvis network in Streamlit
+            components.html(graph_html, height=1000, width=700,scrolling=True)
