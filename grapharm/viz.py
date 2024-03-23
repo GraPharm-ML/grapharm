@@ -80,21 +80,36 @@ var options = {
 }
 """
 
-def networkx2pyvis(G, **options):
+def networkx2pyvis(G, node_df, **options):
+    """From networkx to pyvis graph
+
+    Args:
+        G (nx graph): networkx graph
+        node_df (pd.DataFrame): df load from this file hetionet-v1.0-nodes.tsv
+
+    Returns:
+        pyvis graph: corresponding pyvis graph
+    """
   
     from pyvis.network import Network
     
     H = Network(directed=True, **options)
+    node_dict = node_df.set_index("id").to_dict()["name"]
 
     # Add nodes
     for node, data in G.nodes(data=True):
-        H.add_node(node, entity=data["entity"], color=data["color"], font={
-                   "color": data['color']})
+        H.add_node(node,
+                   label=node_dict[node],
+                   entity=data["entity"], 
+                   color=data["color"], 
+                   font={"color": data['color']})
 
     # Add edges
     for node1, node2, data in G.edges(data=True):
-        H.add_edge(node1, node2, label=data["label"],
-                   color=data["color"], dashes=data["dashes"])
+        H.add_edge(node1, node2, 
+                   label=data["label"],
+                   color=data["color"], 
+                   dashes=data["dashes"])
 
     return H
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-ENVNAME="grapharm-ml"
+ENVNAME="grapharm"
 
 is_installed=$(conda info --envs | grep $ENVNAME -c)
 

@@ -6,53 +6,6 @@ import os
 import tarfile
 import pandas as pd
 
-####################
-# DATA DOWNLOADING #
-####################
-
-
-def download_and_extract(path="../data"):
-    """
-    Adapted from https://github.com/gnn4dr/DRKG/blob/master/utils/utils.py with some modifications
-    """
-    import shutil
-    import requests
-
-    url = "https://s3.us-west-2.amazonaws.com/dgl-data/dataset/DRKG/drkg.tar.gz"
-    filename = "drkg.tar.gz"
-    fn = os.path.join(path, filename)
-    if os.path.exists(f"{path}/drkg.tsv"):
-        return
-
-    # Make directory in case not exisiting
-    os.makedirs(path, exist_ok=True)
-
-    opener, mode = tarfile.open, 'r:gz'
-    os.makedirs(path, exist_ok=True)
-    cwd = os.getcwd()
-    os.chdir(path)
-    while True:
-        try:
-            file = opener(filename, mode)
-            try:
-                file.extractall()
-            finally:
-                file.close()
-            break
-        except Exception:
-            f_remote = requests.get(url, stream=True)
-            sz = f_remote.headers.get('content-length')
-            assert f_remote.status_code == 200, 'fail to open {}'.format(url)
-            with open(filename, 'wb') as writer:
-                for chunk in f_remote.iter_content(chunk_size=1024*1024):
-                    writer.write(chunk)
-            print('Downloadwgkkgk finished. Unzipping the file...')
-
-    print("Delete zip file")
-    os.remove(os.path.join(path, "drkg.tar.gz"))
-    os.chdir(cwd)
-
-
 ###############
 # DATA LOADER #
 ###############
@@ -74,47 +27,52 @@ node_colors = {
     "Pathway": "#60A917"
 }
 
+edge_colors = {
+    "downregulates": "#E74C3C",
+    "expresses": "#1F618D",
+    "upregulates": "#229954",
+    "binds": "#6C3483",
+    "causes": "#BA4A00",
+    "palliates": "#9FE2BF",
+    "resembles": "#2E86C1",
+    "treats": "#40E0D0",
+    "associates": "#FF7F50",
+    "localizes": "#CCCCFF",
+    "presents": "#DFFF00",
+    "covaries": "#27AE60",
+    "interacts": "#A04000",
+    "participates": "#1F618D",
+    "regulates": "#138D75",
+    "includes": "#4D5656"
+}
 
-def load_edge_colors():
-    """Load dictionary of edge colors
 
-    Returns:
-        dict: edge colors
-    """
-    import json
-
-    with open(os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), "edge_colors.json"
-    )) as f:
-        edge_colors = json.load(f)
-
-    return edge_colors
-
-
-def tsv2networkx(drkg, re_gloss):
+def tsv2networkx(data, node_df, edge_type_df):
 
     import networkx as nx
 
-    interaction_types = re_gloss.set_index(
-        "Relation-name").to_dict()["Interaction-type"]
-    edge_colors = load_edge_colors()
-    # Entities
-    entities = list(set(drkg["h"].tolist() + drkg["t"].tolist()))
-    entity_df = pd.DataFrame({"name": entities})
-    entity_df["type"] = entity_df["name"].str.split("::", expand=True)[0]
-
     g_nx = nx.Graph()
 
-    for entity_type in entity_df["type"].unique():
-        entities = entity_df[entity_df["type"] == entity_type]["name"].tolist()
-        g_nx.add_nodes_from(entities, entity=entity_type,
-                            color=node_colors[entity_type])
+    # nodes (add node ids)
+    for node_type in node_df["kind"].unique():
+        nodes = node_df[node_df["kind"] == node_type]["id"].tolist()
+        g_nx.add_nodes_from(nodes,
+                            entity=node_type,
+                            color=node_colors[node_type])
 
-    for link_type in drkg["r"].unique():
-        links = drkg[drkg["r"] == link_type][["h", "t"]
-                                             ].itertuples(index=False, name=None)
-        g_nx.add_edges_from(
-            links, label=interaction_types[link_type], color=edge_colors[link_type], dashes=False)
+    # edges
+    edge_type_df["edge_type"] = edge_type_df["metaedge"].str.split(
+        " - ", expand=True)[1].fillna("regulates")
+
+    link_dict = edge_type_df.set_index("abbreviation").to_dict()["edge_type"]
+    for abrv in edge_type_df["abbreviation"].unique():
+        links = data[data["metaedge"] == abrv][[
+            "source", "target"]].itertuples(index=False, name=None)
+        link_type = link_dict[abrv]
+        g_nx.add_edges_from(links,
+                            label=link_type,
+                            color=edge_colors[link_type],
+                            dashes=False)
 
     return g_nx
 
@@ -135,22 +93,22 @@ def print_graph_stats(G, drkg, connected_components=None):
     print("Average edges per node: {}".format(
         G.number_of_edges()/G.number_of_nodes()))
     print("Number of subgraphs: {}".format(len(connected_components)))
-    
+
     subgraph_num_nodes = {}
     for i, subgraph in enumerate(connected_components):
         subgraph_num_nodes[i] = subgraph.number_of_nodes()
 
     id = max(subgraph_num_nodes, key=subgraph_num_nodes.get)
-    subgraph = connected_components[id]  
+    subgraph = connected_components[id]
     nodes = list(subgraph.nodes)
-    entity_types = set([n.split("::")[0] for n in nodes]) 
+    entity_types = set([n.split("::")[0] for n in nodes])
     print("The largest subgraph has {} nodes ({} types) and {} edges.".format(
         subgraph.number_of_nodes(),
         len(entity_types),
         subgraph.number_of_edges()
     ))
     id = sorted(((v, k) for k, v in subgraph_num_nodes.items()))[-2][1]
-    subgraph = connected_components[id] 
+    subgraph = connected_components[id]
     print("The second largest subgraph has {} nodes and {} edges.".format(
         subgraph.number_of_nodes(),
         subgraph.number_of_edges()
