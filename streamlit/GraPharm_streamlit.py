@@ -44,7 +44,7 @@ edge_colors = {
     "includes": "#4D5656"
 }
 
-@st.cache_data
+#@st.cache_data
 def import_data():
     datadir = "../../data"
     node_df = pd.read_csv(f"{datadir}/hetionet-v1.0-nodes.tsv", sep="\t")
