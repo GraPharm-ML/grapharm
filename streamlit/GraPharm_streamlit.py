@@ -4,6 +4,8 @@ from PIL import Image
 import networkx as nx
 import os
 import streamlit.components.v1 as components
+import requests
+from io import BytesIO
 print(os.getcwd())
 # Create a placeholder
 placeholder = st.empty()
@@ -75,7 +77,9 @@ entities_names = extract_entities_name(node_df)
 
 
 # Implement multiselect dropdown menu for option selection (returns a list)
-image = Image.open('../assets/Logo_hori@33.33x.png')
+url = 'https://raw.githubusercontent.com/GraPharm-ML/grapharm/7a8ead6010320b94b53bf9b654ad354bf5500b1e/assets/Logo_hori%4033.33x.png'
+response = requests.get(url)
+image = Image.open(BytesIO(response.content))
 st.image(image, use_column_width=True)
 st.title("A Graph-based Platform to Uncover Novel Pharmacological Links")
 
