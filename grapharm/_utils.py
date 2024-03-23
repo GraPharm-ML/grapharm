@@ -47,7 +47,7 @@ edge_colors = {
 }
 
 
-def tsv2networkx(data, node_df, edge_type_df):
+def tsv2networkx(edge_df, node_df, edge_type_df):
 
     import networkx as nx
 
@@ -69,7 +69,7 @@ def tsv2networkx(data, node_df, edge_type_df):
 
     link_dict = edge_type_df.set_index("abbreviation").to_dict()["edge_type"]
     for abrv in edge_type_df["abbreviation"].unique():
-        links = data[data["metaedge"] == abrv][[
+        links = edge_df[edge_df["metaedge"] == abrv][[
             "source", "target"]].itertuples(index=False, name=None)
         link_type = link_dict[abrv]
         g_nx.add_edges_from(links,
