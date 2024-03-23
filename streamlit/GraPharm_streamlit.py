@@ -8,42 +8,6 @@ import streamlit.components.v1 as components
 placeholder = st.empty()
 # Write to the placeholder
 placeholder.write("Loading data...")
-
-
-@st.cache_data
-def import_data():
-    drkg = pd.read_csv("data/drkg.tsv", sep="\t", header=None, names=["h", "r", "t"])
-    re_gloss = pd.read_csv("data/relation_glossary.tsv", sep="\t")
-    entities = pd.read_csv("data/embed/entities.tsv", sep="\t", header=None, names=["entity_name", "entity_id"])
-    elations = pd.read_csv("data/embed/relations.tsv", sep="\t", header=None, names=["relation_name", "relation_id"])
-    return drkg, re_gloss, entities, elations
-drkg, re_gloss, entities, elations = import_data()
-# Clear the placeholder
-placeholder.empty()
-
-
-@st.cache_data
-def extract_entities_name(entities):
-    """
-    Extracts the names of entities from a given DataFrame.
-
-    Args:
-        entities (DataFrame): A DataFrame containing entity information.
-
-    Returns:
-        list: A list of entity names extracted from the DataFrame.
-    """
-    entity_names = entities["entity_name"].tolist()
-    return entity_names
-
-entities_names = extract_entities_name(entities)
-
-
-# Implement multiselect dropdown menu for option selection (returns a list)
-image = Image.open('../assets/logo@20x.png')
-st.image(image, use_column_width=True)
-st.title("GraPharm: A Graph-based Pharmacology Platform for Drug Repurposing")
-
 node_colors = {
     "Biological Process": "#1D8348",
     "Molecular Function": "#F0A30A",
@@ -59,9 +23,69 @@ node_colors = {
     "Anatomy": "#F8CECC",
     "Pathway": "#60A917"
 }
-st.sidebar.markdown("## Node Color Legend")
+
+edge_colors = {
+    "downregulates": "#E74C3C",
+    "expresses": "#1F618D",
+    "upregulates": "#229954",
+    "binds": "#6C3483",
+    "causes": "#BA4A00",
+    "palliates": "#9FE2BF",
+    "resembles": "#2E86C1",
+    "treats": "#40E0D0",
+    "associates": "#FF7F50",
+    "localizes": "#CCCCFF",
+    "presents": "#DFFF00",
+    "covaries": "#27AE60",
+    "interacts": "#A04000",
+    "participates": "#1F618D",
+    "regulates": "#138D75",
+    "includes": "#4D5656"
+}
+
+@st.cache_data
+def import_data():
+    datadir = "../data"
+    node_df = pd.read_csv(f"{datadir}/hetionet-v1.0-nodes.tsv", sep="\t")
+    edge_type_df = pd.read_csv(f"{datadir}/metaedges.tsv", sep="\t")
+    edge_df = pd.read_csv(f"{datadir}/hetionet-v1.0-edges.sif", sep="\t")
+    return node_df, edge_type_df, edge_df
+node_df, edge_type_df, edge_df = import_data()
+# Clear the placeholder
+placeholder.empty()
+
+
+@st.cache_data
+def extract_entities_name(entities):
+    """
+    Extracts the names of entities from a given DataFrame.
+
+    Args:
+        entities (DataFrame): A DataFrame containing entity information.
+
+    Returns:
+        list: A list of entity names extracted from the DataFrame.
+    """
+    entity_names = entities["name"].tolist()
+    entities_names = list(set(entity_names))
+    return entity_names
+
+entities_names = extract_entities_name(node_df)
+
+
+# Implement multiselect dropdown menu for option selection (returns a list)
+image = Image.open('../assets/Logo_hori@33.33x.png')
+st.image(image, use_column_width=True)
+st.title("A Graph-based Platform to Uncover Novel Pharmacological Links")
+
+
+st.sidebar.markdown("## Node Types")
 for node_type, color in node_colors.items():
     st.sidebar.markdown(f'<div style="display: inline-block; vertical-align: middle; margin-right: 10px; width: 20px; height: 20px; background-color: {color};"></div> {node_type}', unsafe_allow_html=True)
+st.sidebar.markdown("## Relation Types")
+for edge_type, color in edge_colors.items():
+    st.sidebar.markdown(f'<div style="display: inline-block; vertical-align: middle; margin-right: 10px; width: 20px; height: 20px; background-color: {color};"></div> {edge_type}', unsafe_allow_html=True)
+
 
 # Check if 'selected_entities' is already in the session state
 if 'selected_entities' not in st.session_state or st.session_state.selected_entities == []:
@@ -81,96 +105,56 @@ elif st.button('Choose entities again'):
             st.write('Please select entities to visualize')
             st.stop()
 selected_entities = st.session_state.selected_entities
-st.write('Selected entities:', str(selected_entities[:]))
-
-
-@st.cache_data
-def load_edge_colors():
-    """Load dictionary of edge colors
-
-    Returns:
-        dict: edge colors
-    """
-    import json
-
-    with open( "edge_colors.json") as f:
-        edge_colors = json.load(f)
-
-    return edge_colors
+st.write('Selected entities:', {str(selected_entities)})
         
 @st.cache_data
-def tsv2networkx(drkg,re_gloss):
-    """
-    Convert a TSV file to a NetworkX graph.
-
-    Parameters:
-    - drkg (DataFrame): TSV file containing the data.
-
-    Returns:
-    - g_nx (Graph): NetworkX graph representing the data.
-    """
+def tsv2networkx(edge_df, node_df, edge_type_df):
 
     import networkx as nx
 
-    # Define node colors for different entity types
-    node_colors = {
-        "Biological Process": "#1D8348",
-        "Molecular Function": "#F0A30A",
-        "Tax": "#B9770E",
-        "Atc": "#F4B1AE",
-        "Compound": "#1BA1E2",
-        "Pharmacologic Class": "#BAC8D3",
-        "Symptom": "#E3C800",
-        "Cellular Component": "#FFF2CC",
-        "Side Effect": "#424949",
-        "Disease": "#512E5F",
-        "Gene": "#1B4F72",
-        "Anatomy": "#F8CECC",
-        "Pathway": "#60A917"
-    }
-
-    # Get interaction types from a glossary
-    interaction_types = re_gloss.set_index("Relation-name").to_dict()["Interaction-type"]
-
-    # Load edge colors
-    edge_colors = load_edge_colors()
-
-    # Extract unique entities from the TSV file
-    entities = list(set(drkg["h"].tolist() + drkg["t"].tolist()))
-    entity_df = pd.DataFrame({"name": entities})
-    entity_df["type"] = entity_df["name"].str.split("::", expand=True)[0]
-
-    # Create an empty NetworkX graph
     g_nx = nx.Graph()
 
-    # Add nodes to the graph for each entity type
-    for entity_type in entity_df["type"].unique():
-        entities = entity_df[entity_df["type"] == entity_type]["name"].tolist()
-        g_nx.add_nodes_from(entities, entity=entity_type, color=node_colors[entity_type])
+    # nodes (add node ids)
+    node_name_dict = node_df.set_index("id").to_dict()["name"]
+    node_type_dict = node_df.set_index("id").to_dict()["kind"]
+    for node in node_df["id"].tolist():
+        node_type = node_type_dict[node]
+        g_nx.add_node(node,
+                      label=node_name_dict[node],
+                      entity=node_type,
+                      color=node_colors[node_type])
 
-    # Add edges to the graph for each link type
-    for link_type in drkg["r"].unique():
-        links = drkg[drkg["r"] == link_type][["h", "t"]].itertuples(index=False, name=None)
-        g_nx.add_edges_from(links, label=interaction_types[link_type], color=edge_colors[link_type], dashes=False)
-        g_nx.add_edges_from(
-            links, label=interaction_types[link_type], color=edge_colors[link_type], dashes=False)
+    # edges
+    edge_type_df["edge_type"] = edge_type_df["metaedge"].str.split(
+        " - ", expand=True)[1].fillna("regulates")
+
+    link_dict = edge_type_df.set_index("abbreviation").to_dict()["edge_type"]
+    for abrv in edge_type_df["abbreviation"].unique():
+        links = edge_df[edge_df["metaedge"] == abrv][[
+            "source", "target"]].itertuples(index=False, name=None)
+        link_type = link_dict[abrv]
+        g_nx.add_edges_from(links,
+                            label=link_type,
+                            color=edge_colors[link_type],
+                            dashes=False)
 
     return g_nx
-network = tsv2networkx(drkg,re_gloss)
+g = tsv2networkx(edge_df,node_df, edge_type_df)
 
-def select_entities_for_display(network,drkg,selected_entities):
+def select_entities_for_display(network,edge_df,node_df,selected_entities):
     # Create a subgraph with the selected entities and all entities connected to them
     set_ = set()
     for entity in selected_entities:
-        entity = drkg[(drkg["h"] == entity) |
-                        (drkg["t"] == entity)]
-        set_.update(set(entity["h"].tolist() + entity["t"].tolist()))
+        entity =node_df.loc[node_df['name'] == entity, 'id'].values[0]
+        entity = edge_df[(edge_df["source"] == entity) |
+                        (edge_df["target"] == entity)]
+        set_.update(set(entity["source"].tolist() + entity["target"].tolist()))
         print("Subgraph of {} has {} nodes".format(entity, len(set_)))   
     nodes = list(set_)
     entity_graph = network.subgraph(nodes)
     return entity_graph
 
-subgraph_network= select_entities_for_display(network,drkg, selected_entities)
+subgraph_network= select_entities_for_display(g,edge_df, node_df,selected_entities)
 num_nodes = subgraph_network.number_of_nodes()
 st.write("Number of nodes in the subgraph: ", num_nodes)
 
