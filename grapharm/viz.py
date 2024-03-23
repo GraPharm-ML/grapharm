@@ -80,7 +80,7 @@ var options = {
 }
 """
 
-def networkx2pyvis(G, node_df, **options):
+def networkx2pyvis(G, **options):
     """From networkx to pyvis graph
 
     Args:
@@ -94,22 +94,16 @@ def networkx2pyvis(G, node_df, **options):
     from pyvis.network import Network
     
     H = Network(directed=True, **options)
-    node_dict = node_df.set_index("id").to_dict()["name"]
 
     # Add nodes
     for node, data in G.nodes(data=True):
         H.add_node(node,
-                   label=node_dict[node],
-                   entity=data["entity"], 
-                   color=data["color"], 
-                   font={"color": data['color']})
+                   font={"color": data['color']},
+                   **data)
 
     # Add edges
     for node1, node2, data in G.edges(data=True):
-        H.add_edge(node1, node2, 
-                   label=data["label"],
-                   color=data["color"], 
-                   dashes=data["dashes"])
+        H.add_edge(node1, node2, **data)
 
     return H
 

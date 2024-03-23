@@ -54,11 +54,14 @@ def tsv2networkx(data, node_df, edge_type_df):
     g_nx = nx.Graph()
 
     # nodes (add node ids)
-    for node_type in node_df["kind"].unique():
-        nodes = node_df[node_df["kind"] == node_type]["id"].tolist()
-        g_nx.add_nodes_from(nodes,
-                            entity=node_type,
-                            color=node_colors[node_type])
+    node_name_dict = node_df.set_index("id").to_dict()["name"]
+    node_type_dict = node_df.set_index("id").to_dict()["kind"]
+    for node in node_df["id"].tolist():
+        node_type = node_type_dict[node]
+        g_nx.add_node(node,
+                      label=node_name_dict[node],
+                      entity=node_type,
+                      color=node_colors[node_type])
 
     # edges
     edge_type_df["edge_type"] = edge_type_df["metaedge"].str.split(
