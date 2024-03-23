@@ -92,25 +92,7 @@ for edge_type, color in edge_colors.items():
     st.sidebar.markdown(f'<div style="display: inline-block; vertical-align: middle; margin-right: 10px; width: 20px; height: 20px; background-color: {color};"></div> {edge_type}', unsafe_allow_html=True)
 
 
-# Check if 'selected_entities' is already in the session state
-if 'selected_entities' not in st.session_state or st.session_state.selected_entities == []:
-    with st.form(key='entities_selection'):
-        # Use the value from the session state in the multiselect widget
-        st.session_state.selected_entities = st.multiselect('Select entity/entities to visualize', entities_names)
-        submit_button_1 = st.form_submit_button(label='Submit')
-        if not submit_button_1:
-            st.write('Please select entities to visualize')
-            st.stop()
-elif st.button('Choose entities again'):
-    with st.form(key='entities_selection'):
-        # Use the value from the session state in the multiselect widget
-        st.session_state.selected_entities = st.multiselect('Select entity/entities to visualize', entities_names)
-        submit_button_2 = st.form_submit_button(label='Submit')
-        if not submit_button_2:
-            st.write('Please select entities to visualize')
-            st.stop()
-selected_entities = st.session_state.selected_entities
-st.write('Selected entities:', {str(selected_entities)})
+
         
 @st.cache_data
 def tsv2networkx(edge_df, node_df, edge_type_df):
@@ -158,6 +140,25 @@ def select_entities_for_display(network,edge_df,node_df,selected_entities):
     nodes = list(set_)
     entity_graph = network.subgraph(nodes)
     return entity_graph
+# Check if 'selected_entities' is already in the session state
+if 'selected_entities' not in st.session_state or st.session_state.selected_entities == []:
+    with st.form(key='entities_selection'):
+        # Use the value from the session state in the multiselect widget
+        st.session_state.selected_entities = st.multiselect('Select entity/entities to visualize', entities_names)
+        submit_button_1 = st.form_submit_button(label='Submit')
+        if not submit_button_1:
+            st.write('Please select entities to visualize')
+            st.stop()
+elif st.button('Choose entities again'):
+    with st.form(key='entities_selection'):
+        # Use the value from the session state in the multiselect widget
+        st.session_state.selected_entities = st.multiselect('Select entity/entities to visualize', entities_names)
+        submit_button_2 = st.form_submit_button(label='Submit')
+        if not submit_button_2:
+            st.write('Please select entities to visualize')
+            st.stop()
+selected_entities = st.session_state.selected_entities
+st.write('Selected entities:', {str(selected_entities)})
 
 subgraph_network= select_entities_for_display(g,edge_df, node_df,selected_entities)
 num_nodes = subgraph_network.number_of_nodes()
