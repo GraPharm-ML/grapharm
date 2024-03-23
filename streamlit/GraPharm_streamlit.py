@@ -83,7 +83,7 @@ def logo():
     response = requests.get(url)
     image = Image.open(BytesIO(response.content))
     st.image(image, use_column_width=True)
-    st.title("A Graph-based Platform to Uncover Novel Pharmacological Links")
+    st.title("A Graph-based AI Platform to Uncover Novel Pharmacological Links")
 
 logo()
 
@@ -184,8 +184,6 @@ def networkx2pyvis(_networkx_graph):
         node_attrs['size'] = 7
         pyvis_graph.add_node(node, **node_attrs)
     for source, target, edge_attrs in _networkx_graph.edges(data=True):
-        # Delete the key 'dashes' from the edge attributes
-        del edge_attrs['dashes']
         pyvis_graph.add_edge(source, target, **edge_attrs)
 
     return pyvis_graph
