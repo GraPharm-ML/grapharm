@@ -49,12 +49,13 @@ edge_colors = {
 
 @st.cache_data
 def import_data():
-    url = "https://raw.githubusercontent.com/GraPharm-ML/grapharm/593507efc8cf1d12855bf6dc78c24bc8afaad449/data/"  # Replace with the base URL of your raw files on GitHub
+    url = "https://raw.githubusercontent.com/GraPharm-ML/grapharm/master/data/"  # Replace with the base URL of your raw files on GitHub
     node_df = pd.read_csv(f"{url}hetionet-v1.0-nodes.tsv", sep="\t")
     edge_type_df = pd.read_csv(f"{url}metaedges.tsv", sep="\t")
     edge_df = pd.read_csv(f"{url}hetionet-v1.0-edges.sif", sep="\t")
-    return node_df, edge_type_df, edge_df
-node_df, edge_type_df, edge_df = import_data()
+    new_links = pd.read_csv(f"{url}new_links_v0.csv", sep=",")
+    return node_df, edge_type_df, edge_df,new_links
+node_df, edge_type_df, edge_df,new_links = import_data()
 # Clear the placeholder
 placeholder.empty()
 
@@ -98,7 +99,7 @@ for edge_type, color in edge_colors.items():
 
         
 @st.cache_data
-def tsv2networkx(edge_df, node_df, edge_type_df):
+def tsv2networkx(edge_df, node_df, edge_type_df,new_links=None):
 
     import networkx as nx
 
@@ -127,9 +128,19 @@ def tsv2networkx(edge_df, node_df, edge_type_df):
                             label=link_type,
                             color=edge_colors[link_type],
                             dashes=False)
+        # new edges if available
+    if new_links is not None:
+        for abrv in new_links["metaedge"].unique():
+            links = new_links[new_links["metaedge"]==abrv][[
+                "source", "target"]].itertuples(index=False, name=None)
+            link_type = link_dict[abrv]
+            g_nx.add_edges_from(links,
+                                label=link_type,
+                                color=edge_colors[link_type],
+                                dashes=True)
 
     return g_nx
-g = tsv2networkx(edge_df,node_df, edge_type_df)
+g = tsv2networkx(edge_df,node_df, edge_type_df,new_links)
 
 def select_entities_for_display(network,edge_df,node_df,selected_entities):
     # Create a subgraph with the selected entities and all entities connected to them
@@ -184,6 +195,8 @@ def networkx2pyvis(_networkx_graph):
         node_attrs['size'] = 7
         pyvis_graph.add_node(node, **node_attrs)
     for source, target, edge_attrs in _networkx_graph.edges(data=True):
+        if "dashes" in edge_attrs and edge_attrs["dashes"] == True:
+            edge_attrs["prediction"] = "yes"
         pyvis_graph.add_edge(source, target, **edge_attrs)
 
     return pyvis_graph
