@@ -46,7 +46,7 @@ edge_colors = {
 
 @st.cache_data
 def import_data():
-    datadir = "../data"
+    datadir = "../../data"
     node_df = pd.read_csv(f"{datadir}/hetionet-v1.0-nodes.tsv", sep="\t")
     edge_type_df = pd.read_csv(f"{datadir}/metaedges.tsv", sep="\t")
     edge_df = pd.read_csv(f"{datadir}/hetionet-v1.0-edges.sif", sep="\t")
