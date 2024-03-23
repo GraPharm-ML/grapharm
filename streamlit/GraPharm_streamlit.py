@@ -1,4 +1,16 @@
-!pip install networkx
+import pkg_resources
+import subprocess
+import sys
+
+REQUIRED_PACKAGES = ['networkx', 'streamlit', 'pandas', 'PIL', 'os', 'streamlit.components.v1']
+
+for package in REQUIRED_PACKAGES:
+    try:
+        dist = pkg_resources.get_distribution(package)
+        print('{} ({}) is installed'.format(dist.key, dist.version))
+    except pkg_resources.DistributionNotFound:
+        print('{} is NOT installed'.format(package))
+        subprocess.call([sys.executable, "-m", "pip", "install", package])
 import streamlit as st
 import pandas as pd
 from PIL import Image 
