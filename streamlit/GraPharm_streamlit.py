@@ -1,15 +1,10 @@
-import pkg_resources
-import subprocess
-import sys
-
-
-
 import streamlit as st
 import pandas as pd
 from PIL import Image 
 import networkx as nx
 import os
 import streamlit.components.v1 as components
+print(os.getcwd())
 # Create a placeholder
 placeholder = st.empty()
 # Write to the placeholder
@@ -189,7 +184,7 @@ def networkx2pyvis(_networkx_graph):
 if num_nodes <= 500:
 
 
-    st.write("Plot the subgraph of the selected entities. Choose the edge types to filter out the node of interest.")
+    st.header("Choose the edge types to filter out the node of interest.")
 
 
     graph = networkx2pyvis(subgraph_network)
