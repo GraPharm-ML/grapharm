@@ -522,6 +522,16 @@ class Hetionet(TransductiveDataset):
         "https://www.dropbox.com/s/4dhrvg3fyq5tnu4/test.txt?dl=1",
         ]
     name = "hetionet"
+    
+
+class HetionetA(TransductiveDataset):
+
+    urls = [
+        "https://www.dropbox.com/s/y47bt9oq57h6l5k/train.txt?dl=1",
+        "https://www.dropbox.com/s/a0pbrx9tz3dgsff/valid.txt?dl=1",
+        "https://raw.githubusercontent.com/GraPharm-ML/grapharm/master/data/hetionet/test.txt",
+        ]
+    name = "hetionet-a"
 
 
 class AristoV4(TransductiveDataset):
