@@ -529,7 +529,7 @@ class HetionetA(TransductiveDataset):
     urls = [
         "https://www.dropbox.com/s/y47bt9oq57h6l5k/train.txt?dl=1",
         "https://www.dropbox.com/s/a0pbrx9tz3dgsff/valid.txt?dl=1",
-        "https://raw.githubusercontent.com/GraPharm-ML/grapharm/master/data/hetionet/test.txt",
+        "https://raw.githubusercontent.com/GraPharm-ML/grapharm/master/data/hetionet-a/test.txt",
         ]
     name = "hetionet-a"
 
