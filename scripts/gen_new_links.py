@@ -24,7 +24,8 @@ edge_type_df = pd.read_csv(f"{datadir}/metaedges.tsv", sep="\t")
 
 ckpt_choices = ["ultra_50g.pth",
                 "ultra50g_hetionet50.pth",
-                "ultra50g_hetionet100.pth"]
+                "ultra50g_hetionet100.pth",
+                "ultra50g_hetionet70.pth"]
 dataset_choices = ["Hetionet", "HetionetA"]
 
 parser = argparse.ArgumentParser()
