@@ -28,4 +28,4 @@ To add conda virlenv to Jupyter kernel, first activate the `grapharm` env then t
 * [Hetionet - An integrative network of biomedical knowledge]()
 
 ## Acknowledgement
-* Totoro for very useful discussions about state-of-the-art methods for Graph Reasoning
+* Thank Totoro for very useful discussions about state-of-the-art methods for Graph Reasoning
