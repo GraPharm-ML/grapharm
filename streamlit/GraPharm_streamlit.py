@@ -7,8 +7,19 @@ import streamlit.components.v1 as components
 import requests
 from io import BytesIO
 import random
+from pyvis.network import Network
+st.set_page_config(layout="wide")
 print(os.getcwd())
 # Create a placeholder
+@st.cache_data
+def logo():
+    url = 'https://raw.githubusercontent.com/GraPharm-ML/grapharm/7a8ead6010320b94b53bf9b654ad354bf5500b1e/assets/Logo_hori%4033.33x.png'
+    response = requests.get(url)
+    image = Image.open(BytesIO(response.content))
+    st.image(image, use_column_width=True)
+    st.title("A Graph-based AI Platform to Uncover Novel Pharmacological Links")
+    st.markdown("[For further details, visit our website.](https://grapharm-ml.github.io/)")
+logo()
 placeholder = st.empty()
 # Write to the placeholder
 placeholder.write("Loading data...")
@@ -62,31 +73,17 @@ placeholder.empty()
 
 @st.cache_data
 def extract_entities_name(entities):
-    """
-    Extracts the names of entities from a given DataFrame.
-
-    Args:
-        entities (DataFrame): A DataFrame containing entity information.
-
-    Returns:
-        list: A list of entity names extracted from the DataFrame.
-    """
-    entity_names = entities["name"].tolist()
-    entities_names = list(set(entity_names))
-    return entity_names
-
+    _ = entities["name"].tolist()
+    entities_names = sorted(list(set(_)))
+    return entities_names
 entities_names = extract_entities_name(node_df)
 
+def extract_edge_types(edge_colors):
+    edge_types = edge_colors.keys()
+    return edge_types
+edge_types = extract_edge_types(edge_colors)
 
-@st.cache_data
-def logo():
-    url = 'https://raw.githubusercontent.com/GraPharm-ML/grapharm/7a8ead6010320b94b53bf9b654ad354bf5500b1e/assets/Logo_hori%4033.33x.png'
-    response = requests.get(url)
-    image = Image.open(BytesIO(response.content))
-    st.image(image, use_column_width=True)
-    st.title("A Graph-based AI Platform to Uncover Novel Pharmacological Links")
 
-logo()
 
 st.sidebar.markdown("## Node Types")
 for node_type, color in node_colors.items():
@@ -142,7 +139,8 @@ def tsv2networkx(edge_df, node_df, edge_type_df,new_links=None):
     return g_nx
 g = tsv2networkx(edge_df,node_df, edge_type_df,new_links)
 
-def select_entities_for_display(network,edge_df,node_df,selected_entities):
+def select_entities_for_display(network,edge_df,node_df,selected_entities,
+                                selected_edges,prediction=False):
     # Create a subgraph with the selected entities and all entities connected to them
     set_ = set()
     for entity in selected_entities:
@@ -153,143 +151,103 @@ def select_entities_for_display(network,edge_df,node_df,selected_entities):
         print("Subgraph of {} has {} nodes".format(entity, len(set_)))   
     nodes = list(set_)
     entity_graph = network.subgraph(nodes)
+    filtered_graph = network.__class__()
+    for u, v, data in network.edges(data=True):
+        if data.get('dashes') == True:
+            data.update({'prediction':"yes"})
+        if data.get('label') in selected_edges:
+            filtered_graph.add_edge(u, v, **data)
+    entity_graph = entity_graph.subgraph(filtered_graph.nodes)
+    if prediction == True:
+        prediction_graph = entity_graph.__class__()
+        for source, target, data in entity_graph.edges(data=True):
+            if data.get('dashes') == True:
+                prediction_graph.add_edge(source, target, **data)
+        entity_graph = entity_graph.subgraph(prediction_graph.nodes)
     return entity_graph
-# Check if 'selected_entities' is already in the session state
+
+
 
 #initiate the session state
 with st.form(key='entities_selection'):
 # Use the value from the session state in the multiselect widget
-    if 'selected_entities' not in st.session_state or st.session_state.selected_entities == []:
-        st.session_state.   selected_entities = st.multiselect('Select entity/entities to visualize', entities_names)
-        submit_button_1 = st.form_submit_button(label='Submit')
-        if not submit_button_1:
-            st.write('Please select entities to visualize')
-            st.stop()
-    submit_button_2 = st.form_submit_button(label='Reselect entities')      
-    if submit_button_2:
-        st.session_state.selected_entities = st.multiselect('Select entity/entities to visualize', entities_names)
-        submit_button_3 = st.form_submit_button(label='Submit') 
-        if not submit_button_3:
-            st.write('Please select entities to visualize')
-            st.stop()
-selected_entities = st.session_state.selected_entities
-st.write('Selected entities:', {str(selected_entities)})
+    selected_entities = st.multiselect('Select biological entities you want to visualize', entities_names)
+    all = st.checkbox("Select all biolgical relations",key='all')
+    prediction = st.checkbox("Showing only the biological entities with the predicted relations from GraPharm",key='prediction')
+    selected_edges = st.multiselect('Select biological relations to show', edge_types)
+    submit_button_1 = st.form_submit_button(label='Submit')
+    if not submit_button_1:
+        st.write('Please select biological entities for visualization.')
+        st.stop()    
+    if submit_button_1:
+        if all:
+            selected_edges = edge_types
+    if not selected_entities:
+        st.write('Please choose at least one biological entity for visualization.')
+        st.stop()
+    if not selected_edges:
+        st.write('Please choose at least one relation for visualization.')
+        st.stop()
+    
 
-subgraph_network= select_entities_for_display(g,edge_df, node_df,selected_entities)
+
+subgraph_network= select_entities_for_display(g,edge_df, node_df,selected_entities,
+                                              selected_edges,prediction)
 num_nodes = subgraph_network.number_of_nodes()
-st.write("Number of nodes in the subgraph: ", num_nodes)
+st.write("Number of the biological entities in the graph: ", num_nodes)
 
 
-def networkx2pyvis(_networkx_graph):
-    from pyvis.network import Network
+def networkx2pyvis(networkx_graph):
     # Create a new Pyvis network
     pyvis_graph = Network(notebook=True, 
                             bgcolor="white",
-                            select_menu=False,
+                            select_menu=True,
                             filter_menu=True,
                             neighborhood_highlight=True,
                             cdn_resources='remote')
     pyvis_graph.repulsion()
     # Add nodes and edges to the Pyvis network
-    for node, node_attrs in _networkx_graph.nodes(data=True):
+    for node, node_attrs in networkx_graph.nodes(data=True):
         node_attrs['size'] = 7
+        print(node_attrs)
+        node = node_attrs['label']
         pyvis_graph.add_node(node, **node_attrs)
-    for source, target, edge_attrs in _networkx_graph.edges(data=True):
+    for source, target, edge_attrs in networkx_graph.edges(data=True):
+        source = node_df.loc[node_df['id'] == source, 'name'].values[0]
+        target = node_df.loc[node_df['id'] == target, 'name'].values[0]
         if "dashes" in edge_attrs and edge_attrs["dashes"] == True:
             edge_attrs["prediction"] = "yes"
         pyvis_graph.add_edge(source, target, **edge_attrs)
 
     return pyvis_graph
        
-if num_nodes <= 500:
+if num_nodes <= 50:
 
-
-    st.header("Choose the edge labels or node labels to filter out more the graph of interest.")
-
-
+    st.header("Select the edge prediction option to view the newly predicted links generated by GraPharm.")
     graph = networkx2pyvis(subgraph_network)
 
 
-    # Generate the HTML file
-    graph.show("graph.html")
 
-    # Read the HTML file
-    with open("graph.html", "r") as f:
-        graph_html = f.read()
+if num_nodes > 50:
+    st.write('The subgraph is too large to visualize quickly, and constructing it may take some time. Please be patient, or consider selecting fewer entities or relations.')
+    def small_graph(network,selected_entities):
+        small_graph = network.__class__()
+        for selected_entity in selected_entities:
+            for source, target, data in network.edges(data=True):
+                source_name = node_df.loc[node_df['id'] == source, 'name'].values[0]
+                if source_name in selected_entities:
+                    small_graph.add_edge(source, target, **data)
+                    small_graph.add_node(source, **network.nodes[source])
+                    small_graph.add_node(target, **network.nodes[target])
+        return small_graph
 
-    # Display the Pyvis network in the placeholder
-    components.html(graph_html, height=1000, width=700,scrolling=True)
+    graph = small_graph(subgraph_network,selected_entities)
+    graph = networkx2pyvis(graph)
+graph.show("graph.html")
 
+# Read the HTML file
+with open("graph.html", "r") as f:
+    graph_html = f.read()
 
-if num_nodes > 500:
-
-
-    st.write('The subgraph is too large to visualize. Please select edge types to simplify the graph.')
-    def extract_edge_labels(network):
-        labels = [edge_attrs.get('label') for source, target, edge_attrs in network.edges(data=True)]
-        return labels
-
-    edges_labels = list(set(extract_edge_labels(subgraph_network)))
-    
-    
-  
-    if 'selected_edges' not in st.session_state or st.session_state.selected_edges == []:
-        with st.form(key='selected_edges'):
-            # Use the value from the session state in the multiselect widget
-            selected_edges = st.multiselect('Select edges to visualize', edges_labels)
-            submit_button_2 = st.form_submit_button(label='Submit edges')
-            if not submit_button_2:
-                st.write('Please select edges to visualize')
-                st.stop()
-    st.write('Selected edges:', str(selected_edges[:]))
-    
-    def filter_graph_by_edge_types(network, edge_types):
-        filtered_graph = network.__class__()
-        #filtered_graph.add_nodes_from(network.nodes(data=True))
-        for u, v, data in network.edges(data=True):
-            if data.get('label') in edge_types:
-                filtered_graph.add_edge(u, v, **data)
-        return filtered_graph
-
-    # Use the function
-    filtered_graph = filter_graph_by_edge_types(subgraph_network, selected_edges)
-    # Get the nodes of the filtered graph
-    filtered_nodes = list(filtered_graph.nodes)
-    st.write('Number of nodes in the filtered subgraph:', len(filtered_nodes))
-    if len(filtered_nodes) > 500:
-        st.write('The filtered subgraph is still too large to visualize. Only showing 100 nodes. ')
-        
-        start = random.randint(0, len(filtered_nodes) - 100)
-        end = start + 99
-        selected_nodes = filtered_nodes[start:end]
-        
-        filtered_graph = subgraph_network.subgraph(selected_nodes)
-    
-        graph = networkx2pyvis(filtered_graph)
-
-        # Generate the HTML file
-        graph.show("sub_graph.html")
-
-        # Read the HTML file
-        with open("sub_graph.html", "r") as f:
-            graph_html = f.read()
-        col1,col2 = st.columns(2)
-        with col1:
-            # Display the Pyvis network in Streamlit
-            components.html(graph_html, height=1000, width=700,scrolling=True)
-    else:
-        filtered_graph = subgraph_network.subgraph(filtered_nodes)
-    
-
-        graph = networkx2pyvis(filtered_graph)
-
-        # Generate the HTML file
-        graph.show("sub_graph.html")
-
-        # Read the HTML file
-        with open("sub_graph.html", "r") as f:
-            graph_html = f.read()
-        col1,col2 = st.columns(2)
-        with col1:
-            # Display the Pyvis network in Streamlit
-            components.html(graph_html, height=1000, width=700,scrolling=True)
+# Display the Pyvis network
+components.html(graph_html, height=1200, width=1200,scrolling=True)
