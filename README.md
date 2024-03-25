@@ -3,7 +3,7 @@
 
 <a href="https://colab.research.google.com/github/grapharm-ml/grapharm/blob/master/evaluation.ipynb" target="_parent"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab" height=27/></a></a> <a href="https://grapharm-ml.github.io/" target="_parent"><img src="https://img.shields.io/badge/github%20pages-121013?style=for-the-badge&logo=github&logoColor=white" alt="Page" height=27/></a>
 
-GraPharm aims to learn new biological links between diseases, compounds, genes, pathways, biological process, *etc.* to unveil the hidden relations, accelerate drug discovery.
+GraPharm aims to learn new biological links between diseases, compounds, genes, pathways, biological process, *etc.* to unveil the hidden biological relations, accelerating drug discovery.
 
 ## Prerequisites
 To run the code in this respository, make sure you have installed Miniconda/Anaconda. Then, follow these steps to install the required packages:
@@ -25,7 +25,7 @@ To add conda virlenv to Jupyter kernel, first activate the `grapharm` env then t
 
 ## References
 * [ULTRA: Towars Foundation Models for Knowledge Graph Reasoning](https://openreview.net/forum?id=jVEoydFOl9&referrer=%5Bthe%20profile%20of%20Mikhail%20Galkin%5D(%2Fprofile%3Fid%3D~Mikhail_Galkin1))
-* [Hetionet - An integrative network of biomedical knowledge]()
+* [Hetionet - An integrative network of biomedical knowledge](https://het.io/)
 
 ## Acknowledgement
 * Thank Totoro for very useful discussions about state-of-the-art methods for Graph Reasoning
