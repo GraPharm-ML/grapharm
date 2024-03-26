@@ -8,14 +8,14 @@ import requests
 from io import BytesIO
 import random
 from pyvis.network import Network
+from datetime import datetime
+# Print the current date and time
+print(datetime.now())
 st.set_page_config(layout="wide")
-print(os.getcwd())
 # Create a placeholder
 @st.cache_data
 def logo():
-    url = 'https://raw.githubusercontent.com/GraPharm-ML/grapharm/7a8ead6010320b94b53bf9b654ad354bf5500b1e/assets/Logo_hori%4033.33x.png'
-    response = requests.get(url)
-    image = Image.open(BytesIO(response.content))
+    image = Image.open("../assets/Logo_hori@33.33x.png")
     st.image(image, use_column_width=True)
     st.title("A Graph-based AI Platform to Uncover Novel Pharmacological Links")
     st.markdown("[For further details, visit our website.](https://grapharm-ml.github.io/)")
@@ -60,11 +60,11 @@ edge_colors = {
 
 @st.cache_data
 def import_data():
-    url = "https://raw.githubusercontent.com/GraPharm-ML/grapharm/master/data/"  # Replace with the base URL of your raw files on GitHub
-    node_df = pd.read_csv(f"{url}hetionet-v1.0-nodes.tsv", sep="\t")
-    edge_type_df = pd.read_csv(f"{url}metaedges.tsv", sep="\t")
-    edge_df = pd.read_csv(f"{url}hetionet-v1.0-edges.sif", sep="\t")
-    new_links = pd.read_csv(f"{url}new_links_v0.csv", sep=",")
+    dir = "../data/"  # Replace with the base dir of your raw files on GitHub
+    node_df = pd.read_csv(f"{dir}hetionet-v1.0-nodes.tsv", sep="\t")
+    edge_type_df = pd.read_csv(f"{dir}metaedges.tsv", sep="\t")
+    edge_df = pd.read_csv(f"{dir}hetionet-v1.0-edges.sif", sep="\t")
+    new_links = pd.read_csv(f"{dir}new_links_v0.csv", sep=",")
     return node_df, edge_type_df, edge_df,new_links
 node_df, edge_type_df, edge_df,new_links = import_data()
 # Clear the placeholder
@@ -141,29 +141,48 @@ g = tsv2networkx(edge_df,node_df, edge_type_df,new_links)
 
 def select_entities_for_display(network,edge_df,node_df,selected_entities,
                                 selected_edges,prediction=False):
-    # Create a subgraph with the selected entities and all entities connected to them
-    set_ = set()
+        # Create a subgraph with the selected entities and all entities connected to them
+    list_entities_id = []
     for entity in selected_entities:
         entity =node_df.loc[node_df['name'] == entity, 'id'].values[0]
-        entity = edge_df[(edge_df["source"] == entity) |
-                        (edge_df["target"] == entity)]
-        set_.update(set(entity["source"].tolist() + entity["target"].tolist()))
-        print("Subgraph of {} has {} nodes".format(entity, len(set_)))   
-    nodes = list(set_)
-    entity_graph = network.subgraph(nodes)
-    filtered_graph = network.__class__()
-    for u, v, data in network.edges(data=True):
+        # entity = edge_df[(edge_df["source"] == entity) |
+        #                 (edge_df["target"] == entity)]
+        list_entities_id.append(entity)
+    nodes = list(set(list_entities_id))
+    entity_graph = network.__class__()
+    #edges_of_interest = [(u, v,data) for u, v,data in network.edges(data=True) if u in nodes or v in nodes]
+    for source, target, data in network.edges(nodes, data=True):
+        if network.nodes[source] and network.nodes[target]:
+            entity_graph.add_edge(source, target, **data)
+            entity_graph.add_node(source, **network.nodes[source])
+            entity_graph.add_node(target, **network.nodes[target])  
+    # Create a subgraph with the selected entities and all entities connected to them
+    #filter out the edge by graph
+    
+    edge_filter_graph = entity_graph.__class__()
+    for source, target, data in entity_graph.edges(data=True):
+        # add prediction label to the edge
         if data.get('dashes') == True:
             data.update({'prediction':"yes"})
+        # add the edge to the filtered graph if it is in the selected edges
         if data.get('label') in selected_edges:
-            filtered_graph.add_edge(u, v, **data)
-    entity_graph = entity_graph.subgraph(filtered_graph.nodes)
+            edge_filter_graph.add_edge(source, target, **data)
+            edge_filter_graph.add_node(source, **entity_graph.nodes[source])
+            edge_filter_graph.add_node(target, **entity_graph.nodes[target])
+
+       
+    entity_graph = edge_filter_graph 
+    #plot only the predicted edges if checked
     if prediction == True:
-        prediction_graph = entity_graph.__class__()
-        for source, target, data in entity_graph.edges(data=True):
+        prediction_only_graph = entity_graph.__class__()
+        for source, target, data in edge_filter_graph.edges(data=True):
             if data.get('dashes') == True:
-                prediction_graph.add_edge(source, target, **data)
-        entity_graph = entity_graph.subgraph(prediction_graph.nodes)
+                prediction_only_graph.add_edge(source, target, **data)
+                prediction_only_graph.add_node(source, **entity_graph.nodes[source])
+                prediction_only_graph.add_node(target, **entity_graph.nodes[target])
+                
+        entity_graph = prediction_only_graph 
+    print("This graph has ",entity_graph.number_of_nodes()," nodes and ",entity_graph.number_of_edges()," edges")
     return entity_graph
 
 
@@ -172,9 +191,9 @@ def select_entities_for_display(network,edge_df,node_df,selected_entities,
 with st.form(key='entities_selection'):
 # Use the value from the session state in the multiselect widget
     selected_entities = st.multiselect('Select biological entities you want to visualize', entities_names)
-    all = st.checkbox("Select all biolgical relations",key='all')
     prediction = st.checkbox("Showing only the biological entities with the predicted relations from GraPharm",key='prediction')
     selected_edges = st.multiselect('Select biological relations to show', edge_types)
+    all = st.checkbox("Select all biolgical relations",key='all')
     submit_button_1 = st.form_submit_button(label='Submit')
     if not submit_button_1:
         st.write('Please select biological entities for visualization.')
@@ -189,7 +208,6 @@ with st.form(key='entities_selection'):
         st.write('Please choose at least one relation for visualization.')
         st.stop()
     
-
 
 subgraph_network= select_entities_for_display(g,edge_df, node_df,selected_entities,
                                               selected_edges,prediction)
@@ -209,7 +227,6 @@ def networkx2pyvis(networkx_graph):
     # Add nodes and edges to the Pyvis network
     for node, node_attrs in networkx_graph.nodes(data=True):
         node_attrs['size'] = 7
-        print(node_attrs)
         node = node_attrs['label']
         pyvis_graph.add_node(node, **node_attrs)
     for source, target, edge_attrs in networkx_graph.edges(data=True):
@@ -220,33 +237,24 @@ def networkx2pyvis(networkx_graph):
         pyvis_graph.add_edge(source, target, **edge_attrs)
 
     return pyvis_graph
-       
+if num_nodes == 0:
+    st.subheader("No new biological links were discovered. Please choose different biological entities/relations or disable the new prediction function to view all known biological links.")
+    st.stop()
+st.subheader("All the known links (solid lines) were extracted from Hetionet dataset, the new links (dash lines) were predicted using ULTRA foundation model. To shown only new links (if any), select the edge prediction option.")     
 if num_nodes <= 50:
 
-    st.header("Select the edge prediction option to view the newly predicted links generated by GraPharm.")
+    
     graph = networkx2pyvis(subgraph_network)
 
 
 
 if num_nodes > 50:
     st.write('The subgraph is too large to visualize quickly, and constructing it may take some time. Please be patient, or consider selecting fewer entities or relations.')
-    def small_graph(network,selected_entities):
-        small_graph = network.__class__()
-        for selected_entity in selected_entities:
-            for source, target, data in network.edges(data=True):
-                source_name = node_df.loc[node_df['id'] == source, 'name'].values[0]
-                if source_name in selected_entities:
-                    small_graph.add_edge(source, target, **data)
-                    small_graph.add_node(source, **network.nodes[source])
-                    small_graph.add_node(target, **network.nodes[target])
-        return small_graph
-
-    graph = small_graph(subgraph_network,selected_entities)
-    graph = networkx2pyvis(graph)
-graph.show("graph.html")
+    graph = networkx2pyvis(subgraph_network)
+graph.show(f"graph_{selected_entities}.html")
 
 # Read the HTML file
-with open("graph.html", "r") as f:
+with open(f"graph_{selected_entities}.html", "r") as f:
     graph_html = f.read()
 
 # Display the Pyvis network
