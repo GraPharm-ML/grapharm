@@ -1,8 +1,12 @@
-# Tabular hetnet format
+# Datasets
+
+## Hetionet
+* Source: https://github.com/hetio/hetionet/tree/main/hetnet/tsv
+### Tabular hetnet format
 
 The tabular format requires two tables to represent a hetnet. It also does not include node and edge properties such as the license or attribution and therefore we recommend using our JSON or Neo4j format instead.
 
-## Nodes
+### Nodes
 
 `hetionet-v1.0-nodes.tsv` is a table of network nodes, formatted like:
 
@@ -15,7 +19,7 @@ The tabular format requires two tables to represent a hetnet. It also does not i
 
 `id` is the node identifier prepended with the node type plus `::` as a separator. `name` is the node name. `kind` is the node type.
 
-## Edges
+### Edges
 
 `hetionet-v1.0-edges.sif.gz` is a gzipped TSV table of network edges, formatted like:
 
@@ -27,3 +31,16 @@ The tabular format requires two tables to represent a hetnet. It also does not i
 | Gene::2063              | Gr>G     | Gene::7846                     |
 
 `source` is the source node id as in the node table. `target` is the target node id. `metaedge` is the abbreviation of the edge type.
+
+### Data split
+Folder `hetionet` contains `train.txt`, `valid.txt`, and `test.txt` for training, validation and testing.
+* `inv_entity_vocab.json`: dictionary used to map node indice in model to node ids
+* `inv_rel_vocab.json`: dictionary used to map edge indice in model to edge types
+
+
+## New liks
+Precomputed new links predicted by the model
+
+|Name|Checkpoint|Train dataset|Epochs|Test dataset|
+|---|---|---|---|---|
+|new_links_v0.csv|ultra_50g.pth|50 graphs|0|Hetionet test set|
