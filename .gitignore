@@ -6,3 +6,4 @@ build
 **/lib
 **/.ipynb_checkpoints
 outputs
+streamlit/*.html
