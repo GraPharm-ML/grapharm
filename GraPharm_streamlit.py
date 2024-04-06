@@ -13,9 +13,10 @@ from datetime import datetime
 print(datetime.now())
 st.set_page_config(layout="wide")
 # Create a placeholder
+
 @st.cache_data
 def logo():
-    image = Image.open("../assets/Logo_hori@33.33x.png")
+    image = Image.open("assets/Logo_hori@33.33x.png")
     st.image(image, use_column_width=True)
     st.title("A Graph-based AI Platform to Uncover Novel Pharmacological Links")
     st.markdown("[For further details, visit our website.](https://grapharm-ml.github.io/)")
@@ -60,7 +61,7 @@ edge_colors = {
 
 @st.cache_data
 def import_data():
-    dir = "../data/"  # Replace with the base dir of your raw files on GitHub
+    dir = "data/"  # Replace with the base dir of your raw files on GitHub
     node_df = pd.read_csv(f"{dir}hetionet-v1.0-nodes.tsv", sep="\t")
     edge_type_df = pd.read_csv(f"{dir}metaedges.tsv", sep="\t")
     edge_df = pd.read_csv(f"{dir}hetionet-v1.0-edges.sif", sep="\t")
