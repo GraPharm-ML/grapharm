@@ -12,11 +12,8 @@ To run the code in this respository, make sure you have installed Miniconda/Anac
 * Install required packages inside virtual environment:  `bash install.sh`
 * Later for new updates in the package: `pip install -e .`
 
-## Uncovering new relations
-* Inference on test data: `python scripts/gen_new_links.py -ckpt "ultra_50g.pth" -dataset "Hetionet" -gpus "[0]"`
-* Add new links into the graph: `python scripts/add_new_links_to_graph.py -result_name "ultra_50g-Hetionet.csv" -savename "new_links_v0.csv"`
-
-> Reference: [`ultra`](./ultra/) was adapted from [ULTRA](https://github.com/DeepGraphLearning/ULTRA) with some modifications.
+## Streamlit application
+To run application: `streamlit run GraPharm_streamlit.py`
 
 ## Notebooks
 To add conda virlenv to Jupyter kernel, first activate the `grapharm` env then type: `python -m ipykernel install --user --name grapharm`
