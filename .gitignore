@@ -7,3 +7,5 @@ build
 **/.ipynb_checkpoints
 outputs
 streamlit/*.html
+scripts
+ultra
