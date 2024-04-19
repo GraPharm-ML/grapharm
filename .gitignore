@@ -9,3 +9,4 @@ outputs
 streamlit/*.html
 scripts
 ultra
+*.html

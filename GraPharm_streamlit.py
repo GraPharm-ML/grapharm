@@ -252,10 +252,10 @@ if num_nodes <= 50:
 if num_nodes > 50:
     st.write('The subgraph is too large to visualize quickly, and constructing it may take some time. Please be patient, or consider selecting fewer entities or relations.')
     graph = networkx2pyvis(subgraph_network)
-graph.show(f"streamlit/graph_{selected_entities}.html")
+graph.show(f"graph_{selected_entities}.html")
 
 # Read the HTML file
-with open(f"streamlit/graph_{selected_entities}.html", "r") as f:
+with open(f"graph_{selected_entities}.html", "r") as f:
     graph_html = f.read()
 
 # Display the Pyvis network
